@@ -33,53 +33,39 @@ percentile_weight_kg <- function(sex, weight_kg, age, is_age_in_month = TRUE) {
 
 # DIFFERENT WEIGHT UNITS ------------------------------------------------------
 
-#' Get the WHO standard weight-for-age percentile for a young child
+#' Given a weight in grams, return the equivalent weight in kilograms.
 #'
-#' @param sex A string: "m", "f" or their capital forms.
-#' @param weight_g A number: the child's weight in grams.
-#' @param age A number representing the child's age. See next argument for
-#'   units.
-#' @param is_age_in_month A boolean: TRUE if the preceding argument is an age
-#'   in months, or FALSE if it is an age in days.
-#' @return A number in [0, 100), representing the WHO standard growth
-#'   percentile
+#' @param grams A weight in grams.
+#' @return A weight in kilograms
 #' @examples
-#' percentile_weight_g("F", 3930, 0, FALSE)
-#' @family weight-for-age percentile functions
-#' @seealso \code{\link{percentile_weight_kg}} for weights in kilograms,
-#'   \code{\link{percentile_weight_lb_oz}} for weights in pounds and ounces.
-percentile_weight_g <- function(sex, weight_g, age, is_age_in_month = TRUE) {
-  weight_kg <- weight_g %>%
+#' weight_g(3930)
+#' @family weight conversion functions
+#' @seealso \code{\link{weight_lb_oz}} for weights in pounds and/or ounces.
+weight_g <- function(grams) {
+  grams %>%
     set_units("gram") %>%
     set_units("kilogram") %>%
     drop_units()
-  percentile_weight_kg(sex, weight_kg, age, is_age_in_month)
 }
 
-#' Get the WHO standard weight-for-age percentile for a young child
+#' Given a weight in pounds and/or ounces, return the equivalent weight in
+#' kilograms.
 #'
-#' @param sex A string: "m", "f" or their capital forms.
-#' @param weight_lb A number: the portion of the child's weight in pounds
-#' @param weight_oz A number: the portion of the child's weight in ounces
-#' @param age A number representing the child's age. See next argument for
-#'   units.
-#' @param is_age_in_month A boolean: TRUE if the preceding argument is an age
-#'   in months, or FALSE if it is an age in days.
-#' @return A number in [0, 100), representing the WHO standard growth
-#'   percentile
+#' @param pounds A weight in pounds.
+#' @param ounces A weight in ounces.
+#' @return A weight in kilograms
 #' @examples
-#' percentile_weight_kg("F", 3.930, 0, FALSE)
-#' @family weight-for-age percentile functions
-#' @seealso \code{\link{percentile_weight_g}} for weights in grams,
-#'   \code{\link{percentile_weight_kg}} for weights in kilograms.
-percentile_weight_lb_oz <- function(
-    sex, weight_lb, weight_oz, age, is_age_in_month = TRUE) {
-  weight_lb <- weight_lb %>%
+#' weight_lb_oz(8, 10)
+#' weight_lb_oz(8.625, 0)
+#' weight_lb_oz(0, 138)
+#' @family weight conversion functions
+#' @seealso \code{\link{weight_g}} for weights in grams.
+weight_lb_oz <- function(pounds, ounces) {
+  pounds <- pounds %>%
     set_units("avoirdupois_pound")
-  weight_oz <- weight_oz %>%
+  ounces <- ounces %>%
     set_units("avoirdupois_ounce")
-  weight_kg <- (weight_lb + weight_oz) %>%
+  (pounds + ounces) %>%
     set_units("kilogram") %>%
     drop_units()
-  percentile_weight_kg(sex, weight_kg, age, is_age_in_month)
 }
