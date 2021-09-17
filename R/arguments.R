@@ -78,13 +78,13 @@ standardize_sex <- function(raw_text) {
 # AGE STANDARDIZATION ---------------------------------------------------------
 
 AGE_LOOKUPS <- tribble(
-  ~unit,    ~days,
-  "day",    1,
-  "week",   7,
+  ~unit,    ~plural,  ~days,
+  "day",    "days",   1,
+  "week",   "weeks",  7,
   # For growth curves, "1 month = 30.4375 days" (i.e., 365.25 / 12), per:
   # https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/instructionsa1066ff7424c40fa9282d0e6623dc097.pdf?sfvrsn=334a2f9a_0
-  "month",  30.4375,
-  "year",   365.25)
+  "month",  "months", 30.4375,
+  "year",   "years",  365.25)
 AGE_ABBREVIATIONS <- tribble(
   ~unit,    ~abbr,
   "day",    "day",
@@ -105,7 +105,9 @@ AGE_ABBREVIATIONS <- tribble(
 #'
 #' @param raw_text The exact string provided by the user when prompted for a
 #'   child's age
-#' @return A number of days equivalent to the given age
+#' @return A number of days equivalent to the given age, with an `explained`
+#'   character attribute with a standardized human-readable interpretation of
+#'   the input
 #' @examples
 #' standardize_age("6 weeks")
 standardize_age <- function(raw_text) {
@@ -122,9 +124,18 @@ standardize_age <- function(raw_text) {
     transmute(
       amount = as.numeric(amount),
       unit_raw = str_remove(unit, "[sS]$"))
-  ages_raw %>%
+  ages_parsed <- ages_raw %>%
     inner_join(AGE_ABBREVIATIONS, by = c("unit_raw" = "abbr")) %>%
-    inner_join(AGE_LOOKUPS, by = "unit") %>%
+    inner_join(AGE_LOOKUPS, by = "unit")
+  total_age <- ages_parsed %>%
     summarize(total_days = sum(amount * days)) %>%
     .$total_days
+  attr(total_age, "explained") <- ages_parsed %>%
+    arrange(desc(days)) %>%
+    pmap_chr(function(...) {
+      age <- tibble(...)
+      str_c(age$amount, " ", ifelse(age$amount == 1, age$unit, age$plural))
+    }) %>%
+    str_c(collapse = ", ")
+  total_age
 }

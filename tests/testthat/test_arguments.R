@@ -25,13 +25,22 @@ test_that("sexes are parsed properly", {
 })
 
 test_that("ages are parsed properly", {
-  expect_equal(standardize_age("9 months"), 273.9375)
-  expect_equal(standardize_age("six weeks"), 42)
-  expect_equal(standardize_age("1 month"), 30.4375)
-  expect_equal(standardize_age("3mo"), 91.3125)
-  expect_equal(standardize_age("2m"), 60.875)
-  expect_equal(standardize_age("2Y"), 730.5)
-  expect_equal(standardize_age("one year"), 365.25)
-  expect_equal(standardize_age("Three weeks, two days"), 23)
-  expect_equal(standardize_age("1y10m3d"), 672.625)
+  expect_equal(standardize_age("9 months"), structure(
+    273.9375, explained = "9 months"))
+  expect_equal(standardize_age("six weeks"), structure(
+    42, explained = "6 weeks"))
+  expect_equal(standardize_age("1 month"), structure(
+    30.4375, explained = "1 month"))
+  expect_equal(standardize_age("3mo"), structure(
+    91.3125, explained = "3 months"))
+  expect_equal(standardize_age("2m"), structure(
+    60.875, explained = "2 months"))
+  expect_equal(standardize_age("2Y"), structure(
+    730.5, explained = "2 years"))
+  expect_equal(standardize_age("one year"), structure(
+    365.25, explained = "1 year"))
+  expect_equal(standardize_age("Three weeks, two days"), structure(
+    23, explained = "3 weeks, 2 days"))
+  expect_equal(standardize_age("1y10m3d"), structure(
+    672.625, explained = "1 year, 10 months, 3 days"))
 })
