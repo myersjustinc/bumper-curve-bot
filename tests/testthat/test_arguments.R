@@ -3,14 +3,20 @@ test_dir <- utils::getSrcDirectory(function(foo) { foo })
 source(file.path(test_dir, "..", "..", "R", "arguments.R"))
 
 test_that("weights are parsed properly", {
-  skip("TK")
-  expect_equal(round(standardize_weight("3930 g"), 1), 3.9)
-  expect_equal(round(standardize_weight("3.9kg"), 1), 3.9)
-  expect_equal(round(standardize_weight("5 kilos"), 1), 5)
-  expect_equal(round(standardize_weight("12 pounds"), 1), 5.4)
-  expect_equal(round(standardize_weight("8 pounds, 10 ounces"), 1), 3.9)
-  expect_equal(round(standardize_weight("8.625 lb"), 1), 3.9)
-  expect_equal(round(standardize_weight("138oz"), 1), 3.9)
+  expect_equal(round(standardize_weight("3930 g"), 1), structure(
+    3.9, explained = "3930 g"))
+  expect_equal(round(standardize_weight("3.9kg"), 1), structure(
+    3.9, explained = "3.9 kg"))
+  expect_equal(round(standardize_weight("5 kilos"), 1), structure(
+    5, explained = "5 kg"))
+  expect_equal(round(standardize_weight("12 pounds"), 1), structure(
+    5.4, explained = "12 lb"))
+  expect_equal(round(standardize_weight("8 pounds, 10 ounces"), 1), structure(
+    3.9, explained = "8 lb 10 oz"))
+  expect_equal(round(standardize_weight("8.625 lb"), 1), structure(
+    3.9, explained = "8.625 lb"))
+  expect_equal(round(standardize_weight("138oz"), 1), structure(
+    3.9, explained = "138 oz"))
 })
 
 test_that("sexes are parsed properly", {
