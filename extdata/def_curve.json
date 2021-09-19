@@ -1,0 +1,35 @@
+{
+  "name": "curve",
+  "type": 1,
+  "description": "Get a child's WHO growth-curve percentile",
+  "options": [
+    {
+      "name": "sex",
+      "type": 3,
+      "description": "child's sex",
+      "required": true,
+      "choices": [
+        {
+          "name": "male",
+          "value": "M"
+        },
+        {
+          "name": "female",
+          "value": "F"
+        }
+      ]
+    },
+    {
+      "name": "weight",
+      "type": 3,
+      "description": "child's weight",
+      "required": true
+    },
+    {
+      "name": "age",
+      "type": 3,
+      "description": "child's age",
+      "required": true
+    }
+  ]
+}
