@@ -1,6 +1,6 @@
 # DEPENDENCIES ----------------------------------------------------------------
 library(tidyverse)
-library(jsonlite)
+library(sodium)
 
 # CONSTANTS -------------------------------------------------------------------
 SOURCE_DIR <- utils::getSrcDirectory(function(foo) { foo })
@@ -16,6 +16,24 @@ REPO_ROOT <- normalizePath(file.path(SOURCE_DIR, ".."))
 
 # LOAD HELPERS ----------------------------------------------------------------
 source(file.path(REPO_ROOT, "R", "arguments.R"))
+
+# OTHER UTILITY FUNCTIONS -----------------------------------------------------
+
+#' Convert a hexadecimal string of arbitrary length to a raw object containing
+#' the repreaented bytes.
+#'
+#' @param hex_string A string of hexadecimal digits.
+#' @return A raw object
+#' @examples
+#' hex_to_raw("0badf00d")
+#' hex_to_raw("6d61646520796f75206c6f6f6b")
+hex_to_raw <- function(hex_string) {
+  hex_string %>%
+    str_extract_all("[0-9a-fA-F]{2}") %>%
+    .[[1]] %>%
+    strtoi(16) %>%
+    as.raw()
+}
 
 # DISCORD API INTERACTIONS ----------------------------------------------------
 
@@ -61,4 +79,26 @@ register_slash_command <- function(
     add_headers(Authorization = str_c("Bearer ", client_token)),
     body = upload_file(command_spec_path, type = "application/json"))
   stop_for_status(res)
+}
+
+#' Verify the Ed25519 signature of an incoming Discord interaction.
+#'
+#' @param req A beakr::Request.
+#' @param public_key_hex A string Ed25519 public key, represented in
+#'   hexadecimal.
+#' @return A logical noting whether the signature is valid
+verify_request_signature <- function(req, public_key_hex) {
+  tryCatch(
+    (function() {
+      message <- str_c(
+          req$headers$x_signature_timestamp,
+          req$body) %>%
+        charToRaw()
+      signature <- hex_to_raw(req$headers$x_signature_ed25519)
+      public_key <- hex_to_raw(public_key_hex)
+      tryCatch(
+        sig_verify(message, signature, public_key),
+        error = function(unused) { FALSE })
+    })(),
+    error = function(unused) { FALSE })
 }
