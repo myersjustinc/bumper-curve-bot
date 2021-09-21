@@ -1,6 +1,6 @@
 context("Discord API objects")
 test_dir <- utils::getSrcDirectory(function(foo) { foo })
-source(file.path(test_dir, "..", "..", "R", "commands.R"))
+source(file.path(test_dir, "..", "..", "R", "discord_helpers.R"))
 
 test_that("hex strings get parsed properly", {
   expect_equal(hex_to_raw("0badf00d"), as.raw(c(0x0b, 0xad, 0xf0, 0x0d)))
