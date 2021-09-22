@@ -36,7 +36,15 @@ http_post_interaction_application_command <- function(req, res, err) {
 #' @param err A beakr::Error.
 #' @return A beakr::Response
 http_post_interaction_message_component <- function(req, res, err) {
-  # TODO: Add this.
+  res$setStatus(200)
+  res$setHeader("Content-Type", "application/json")
+  tribble(
+      ~type,
+      6) %>%  # acknowledge, but don't act
+    unbox() %>%
+    toJSON() %>%
+    as.character() %>%
+    res$setBody()
 }
 
 #' Handle a PING interaction from a Discord webhook.

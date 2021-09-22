@@ -11,7 +11,15 @@ load_fixture <- function(name) {
 
 # http_post_interaction_application_command(req, res, err)
 
-# http_post_interaction_message_component(req, res, err)
+test_that("MESSAGE_COMPONENT interactions work as expected", {
+  req <- load_fixture("req_message_component.RDS")
+  res <- load_fixture("res_blank.RDS")
+  err <- load_fixture("err_blank.RDS")
+  http_post_interaction_message_component(req, res, err)
+  expect_equal(res$status, 200)
+  expect_equal(res$body, '{"type":6}')
+  expect_equal(res$headers$`Content-Type`, 'application/json')
+})
 
 test_that("PING interactions work as expected", {
   req <- load_fixture("req_ping.RDS")
