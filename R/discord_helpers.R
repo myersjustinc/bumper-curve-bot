@@ -2,20 +2,8 @@
 library(tidyverse)
 library(sodium)
 
-# CONSTANTS -------------------------------------------------------------------
-SOURCE_DIR <- utils::getSrcDirectory(function(foo) { foo })
-if (length(SOURCE_DIR) == 0) {
-  pwd = getwd()
-  if (basename(pwd) == "testthat") {
-    SOURCE_DIR <- file.path(pwd, "..", "..", "R")
-  } else {
-    SOURCE_DIR <- pwd
-  }
-}
-REPO_ROOT <- normalizePath(file.path(SOURCE_DIR, ".."))
-
 # LOAD HELPERS ----------------------------------------------------------------
-source(file.path(REPO_ROOT, "R", "arguments.R"))
+source(here::here("R", "arguments.R"))
 
 # OTHER UTILITY FUNCTIONS -----------------------------------------------------
 
@@ -72,7 +60,7 @@ register_slash_command <- function(
     "https://discord.com/api/v8/applications/", app_id,
     ifelse(is.na(guild_id), "", str_c("/guilds/", guild_id)),
     "/commands")
-  command_spec_path <- file.path(REPO_ROOT, "extdata", str_c(
+  command_spec_path <- here::here("extdata", str_c(
     "def_", command_name, ".json"))
   res <- POST(
     command_meta_url,

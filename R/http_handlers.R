@@ -2,22 +2,10 @@
 library(tidyverse)
 library(jsonlite)
 
-# CONSTANTS -------------------------------------------------------------------
-SOURCE_DIR <- utils::getSrcDirectory(function(foo) { foo })
-if (length(SOURCE_DIR) == 0) {
-  pwd = getwd()
-  if (basename(pwd) == "testthat") {
-    SOURCE_DIR <- file.path(pwd, "..", "..", "R")
-  } else {
-    SOURCE_DIR <- pwd
-  }
-}
-REPO_ROOT <- normalizePath(file.path(SOURCE_DIR, ".."))
-
 # LOAD HELPERS ----------------------------------------------------------------
-source(file.path(REPO_ROOT, "R", "discord_helpers.R"))
-source(file.path(REPO_ROOT, "R", "curves.R"))
-source(file.path(REPO_ROOT, "R", "output_helpers.R"))
+source(here::here("R", "discord_helpers.R"))
+source(here::here("R", "curves.R"))
+source(here::here("R", "output_helpers.R"))
 
 # INTERACTION TYPES -----------------------------------------------------------
 

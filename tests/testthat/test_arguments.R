@@ -1,6 +1,5 @@
 context("Message argument parsing")
-test_dir <- utils::getSrcDirectory(function(foo) { foo })
-source(file.path(test_dir, "..", "..", "R", "arguments.R"))
+source(here::here("R", "arguments.R"))
 
 test_that("weights are parsed properly", {
   expect_equal(round(standardize_weight("3930 g"), 1), structure(

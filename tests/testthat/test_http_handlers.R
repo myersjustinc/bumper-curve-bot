@@ -1,10 +1,9 @@
 context("HTTP handlers")
-test_dir <- utils::getSrcDirectory(function(foo) { foo })
-source(file.path(test_dir, "..", "..", "R", "http_handlers.R"))
+source(here::here("R", "http_handlers.R"))
 
-# test helpers ----------------------------------------------------------------
+# TEST HELPERS ----------------------------------------------------------------
 load_fixture <- function(name) {
-  readr::read_rds(file.path(test_dir, "fixtures", name))
+  readr::read_rds(here::here("tests", "testthat", "fixtures", name))
 }
 
 # INTERACTION TYPES -----------------------------------------------------------
