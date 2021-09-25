@@ -86,7 +86,58 @@ http_post_interaction_ping <- function(req, res, err) {
     res$setBody()
 }
 
+#' Handle unknown types of interaction from a Discord webhook.
+#'
+#' @param req A beakr::Request.
+#' @param res A beakr::Response.
+#' @param err A beakr::Error.
+#' @return A beakr::Response
+http_post_interaction_unknown <- function(req, res, err) {
+  res$setStatus(401)
+  res$setHeader("Content-Type", "application/json")
+  tribble(
+      ~error,
+      "unknown interaction type") %>%
+    unbox() %>%
+    toJSON() %>%
+    as.character() %>%
+    res$setBody()
+}
+
 # /interaction DISPATCHER -----------------------------------------------------
+
+#' Handle an interaction from a Discord webhook.
+#'
+#' @param req A beakr::Request.
+#' @param res A beakr::Response.
+#' @param err A beakr::Error.
+#' @return A beakr::Response
+http_post_interaction <- function(req, res, err) {
+  public_key <- Sys.getenv("DISCORD_PUBLIC_KEY")
+  if (!verify_request_signature(req, public_key)) {
+    res$setStatus(401)
+    res$setHeader("Content-Type", "application/json")
+    tribble(
+        ~error,
+        "invalid request signature") %>%
+      unbox() %>%
+      toJSON() %>%
+      as.character() %>%
+      res$setBody()
+  } else {
+    parsed <- fromJSON(req$body)
+    interaction_type <- parsed$type
+    if (interaction_type == 1) {
+      http_post_interaction_ping(req, res, err)
+    } else if (interaction_type == 2) {
+      http_post_interaction_application_command(req, res, err)
+    } else if (interaction_type == 3) {
+      http_post_interaction_message_component(req, res, err)
+    } else {
+      http_post_interaction_unknown(req, res, err)
+    }
+  }
+}
 
 # INSTALLATION ----------------------------------------------------------------
 
