@@ -25,7 +25,8 @@ test_that("/curve options get parsed properly", {
 test_that("Discord signatures get validated properly", {
   public_key <- (
     "26838e866387ffa6c1e649a035e48df418a695fbb69289b2515772764d8d9347")
-  req <- readr::read_rds(here::here("tests", "testthat", "fixtures", "signed_post.RDS"))
+  req <- readr::read_rds(here::here(
+    "tests", "testthat", "fixtures", "signed_post.RDS"))
   expect_true(verify_request_signature(req, public_key))
   req$headers$x_signature_ed25519 <- str_c(
     "0000000000000000000000000000000000000000000000000000000000000000",
