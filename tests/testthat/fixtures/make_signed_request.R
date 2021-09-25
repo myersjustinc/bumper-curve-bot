@@ -8,8 +8,8 @@ signature <- sodium::sig_sign(message, private_key)
 
 req <- readRDS(here::here("tests", "testthat", "fixtures", "signed_post.RDS"))
 req$body <- body
-req$setHeader("X-Signature-Timestamo", as.character(timestamp))
-req$setHeader("X-Signature-Ed25519", stringr::str_c(
+req$setHeader("x_signature_timestamp", as.character(timestamp))
+req$setHeader("x_signature_ed25519", stringr::str_c(
   PKI::raw2hex(signature), collapse = ""))
 
 saveRDS(req, stdout(), ascii = TRUE)

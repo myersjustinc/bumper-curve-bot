@@ -50,8 +50,8 @@ body
 16
 1
 262153
-646
-{\"type\":2,\"token\":\"0000111122223333\",\"member\":{\"user\":{\"id\":\"13579246801357924\",\"username\":\"myersjustinc\",\"avatar\":\"a_deadbeefdeadbeefdeadbeefdeadbeef\",\"discriminator\":\"0042\",\"public_flags\":111111},\"roles\":[\"663399663399663399\"],\"premium_since\":null,\"permissions\":\"2147483647\",\"pending\":false,\"nick\":null,\"mute\":false,\"joined_at\":\"2021-01-01T00:00:00.000000+00:00\",\"is_pending\":false,\"deaf\":true},\"id\":\"000000001111111101\",\"guild_id\":\"223344556677889900\",\"data\":{\"options\":[{\"name\":\"sex\",\"value\":\"F\"},{\"name\":\"weight\",\"value\":\"14\040pounds\"},{\"name\":\"age\",\"value\":\"7w0d\"}],\"name\":\"curve\",\"id\":\"888888888888888888\"},\"channel_id\":\"987654321098765432\"}
+10
+{\"type\":9}
 1026
 1
 262153
@@ -1377,7 +1377,7 @@ deferred_string
 2
 13
 1
-1632593696
+1632592744
 13
 1
 0
@@ -1396,7 +1396,7 @@ curl/7.78.0
 1
 262153
 128
-2ccf5b8f73883fc124fc8ab54b263535c769b4b2eca20e85077cdeadeaab969de23b3f508f2b6aef6923845b629b51df2660525c48cd8be3f990557e601ec007
+a8e1bab64a81c742ba1bf7f7abfc405250a2232c5390bddefcee9dace7a2dc0398d50be3e8cab855872479808846ef3787a5edde178faf2b94253f371d6d680d
 1026
 18175
 16
