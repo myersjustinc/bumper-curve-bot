@@ -41,9 +41,9 @@ RUN \
   ./configure \
     --prefix=/usr \
     && \
-  make install
+  make install \
     && \
-  cd '/tmp'
+  cd '/tmp' \
     && \
   rm -rf \
     "/tmp/udunits-${UDUNITS_VERSION}.tar.gz” \
