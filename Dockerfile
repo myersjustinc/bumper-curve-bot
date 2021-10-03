@@ -58,3 +58,8 @@ RUN \
         && \
   Rscript -e \
     'install.packages(c("PKI", "anthro", "beakr", "here", "progress", "tidyverse", "units"), repos = "https://mirror.las.iastate.edu/CRAN/")'
+
+WORKDIR /app
+COPY . /app
+
+CMD ["./test.R"]
