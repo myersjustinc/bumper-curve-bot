@@ -41,7 +41,9 @@ start_server <- function(port, db) {
   newBeakr() %>%
     httpGET("/", serve_flat_html("home.html")) %>%
     httpGET("/terms", serve_flat_html("terms.html")) %>%
-    # TODO: Define installation helper (redirect).
+    httpGET("/install", function(req, res, err) {
+      res$redirect(INSTALL_URL)
+    }) %>%
     # TODO: Define interaction webhook endpoint.
     serveStaticFiles("/static", STATIC_FILE_ROOT) %>%
     handleErrors() %>%

@@ -17,6 +17,10 @@ DISCORD_CURRENT_AUTH_URL <- Sys.getenv(
 CLIENT_ID <- Sys.getenv("DISCORD_CLIENT_ID")
 CLIENT_SECRET <- Sys.getenv("DISCORD_CLIENT_SECRET")
 
+INSTALL_URL <- str_c(
+  "https://discord.com/api/oauth2/authorize?",
+  "client_id=", CLIENT_ID, "&scope=applications.commands")
+
 # SETUP HELPERS ---------------------------------------------------------------
 
 #' Ensure the necessary tables exist in the database.
