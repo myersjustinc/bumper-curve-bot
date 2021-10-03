@@ -57,7 +57,7 @@ RUN \
     'remotes::install_github("tidyverse/readxl@649982ab3769e5b41753b9e543887f95c487425b")' \
         && \
   Rscript -e \
-    'install.packages(c("PKI", "anthro", "beakr", "here", "progress", "tidyverse", "units"), repos = "https://mirror.las.iastate.edu/CRAN/")'
+    'install.packages(c("PKI", "anthro", "beakr", "here", "progress", "sodium", "tidyverse", "units"), repos = "https://mirror.las.iastate.edu/CRAN/")'
 
 WORKDIR /app
 COPY . /app
