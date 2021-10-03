@@ -1,8 +1,5 @@
-# TODO: Determine how much of this we actually need.
-
 # DEPENDENCIES ----------------------------------------------------------------
 library(tidyverse)
-library(DBI)
 library(httr)
 
 # CONSTANTS -------------------------------------------------------------------
@@ -21,24 +18,20 @@ INSTALL_URL <- str_c(
   "https://discord.com/api/oauth2/authorize?",
   "client_id=", CLIENT_ID, "&scope=applications.commands")
 
-# SETUP HELPERS ---------------------------------------------------------------
+ACCESS_CACHE_KEY <- "BOT_ACCESS_CACHE"
 
-#' Ensure the necessary tables exist in the database.
+# TOKEN USAGE -----------------------------------------------------------------
+
+#' Get an OAuth access token.
 #'
-#' @param con A DBI::DBConnection.
-#' @return Nothing
-ensure_tables <- function(con) {
-  dbExecute(con, "
-    CREATE TABLE
-      IF NOT EXISTS
-      discord_tokens
-    (
-      guild_id varchar PRIMARY KEY,
-      token_type varchar,
-      access_token varchar,
-      refresh_token varchar NULL
-    )
-    ;")
+#' @return A string OAuth2 access token
+discord_token <- function() {
+  token <- get_auth_token()
+  if (is.na(token) | !check_token_validity(token)) {
+    get_auth_token(TRUE)
+  } else {
+    token
+  }
 }
 
 # TOKEN LIFECYCLE -------------------------------------------------------------
@@ -63,83 +56,32 @@ check_token_validity <- function(access_token, token_type = "Bearer") {
   }
 }
 
-#' Retrieve a new access token.
+#' Get an OAuth access token using client credentials.
 #'
-#' @param refresh_token A string OAuth2 refresh token.
-#' @return A string OAuth2 access token if available, or NA otherwise
-refresh_auth_token <- function(refresh_token) {
-  res <- POST(
-    DISCORD_OAUTH2_TOKEN_URL,
-    body = list(
-      "client_id" = CLIENT_ID,
-      "client_secret" = CLIENT_SECRET,
-      "grant_type" = "refresh_token",
-      "refresh_token" = refresh_token),
-    encode = "form")
-  if (http_error(res)) {
-    NA_character_
-  } else {
-    content(res)
-  }
-}
-
-# TOKEN STORAGE AND RETRIEVAL -------------------------------------------------
-
-#' Persist an access token to the database.
+#' Caches this value in the environment so we don't have to hit the API each
+#' time.
 #'
-#' @param con A DBI::DBConnection.
-#' @param guild_id A string ID for the Discord server being accessed.
-#' @param access_token A string OAuth2 access token.
-#' @param token_type A string to be used as the first element of an HTTP
-#'   `Authorization` header.
-#' @param refresh_token A string OAuth2 refresh token.
-#' @return Nothing
-save_token <- function(
-    con, guild_id, access_token,
-    token_type = "Bearer", refresh_token = NA_character_) {
-  dbExecute(con, str_c(
-    "INSERT ",
-      "INTO discord_tokens ",
-    "(guild_id, token_type, access_token, refresh_tokem) ",
-    "VALUES ",
-    "(",
-      "'", sql(guild_id), "', ",
-      "'", sql(token_type), "', ",
-      "'", sql(access_token), "'",
-      "'", sql(refresh_token), "'",
-    ") ",
-    "ON CONFLICT (guild_id) DO UPDATE ",
-    "SET ",
-      "token_type = excluded.token_type, ",
-      "access_token = excluded.access_token, ",
-      "refresh_token = excluded.refresh_token",
-    ";"))
-}
-
-#' Retrieve an access token from the database, refreshing it first if needed.
-#'
-#' @param con A DBI::DBConnection.
-#' @param guild_id A string ID for the Discord server being accessed.
-#' @return A string OAuth2 access token if available, or NA otherwise
-get_token <- function(con, guild_id) {
-  creds_row <- con %>%
-    tbl("discord_tokens") %>%
-    filter(guild_id == guild_id) %>%
-    collect()
-  if (!nrow(creds_row)) {
-    NA_character_
-  } else {
-    creds <- creds_row %>%
-      transpose() %>%
-      .[[1]]
-    if (check_token_validity(creds$access_token, creds$token_type)) {
-      creds$access_token
+#' @param force A logical (default FALSE)  specifying whether to ignore any
+#'   cached value.
+#' @return A string OAuth2 access token
+get_auth_token <- function(force = FALSE) {
+  access_cached <- Sys.getenv(ACCESS_CACHE_KEY, NA_character_)
+  if (is.na(access_cached) | force) {
+    res <- POST(
+      DISCORD_OAUTH2_TOKEN_URL,
+      body = list(
+        "grant_type" = "client_credentials",
+        "scope" = "application.commands.update"),
+      encode = "form")
+    if (http_error(res)) {
+      FALSE
     } else {
-      new_creds <- refresh_auth_token(creds$refresh_token)
-      save_token(
-        con, guild_id, new_creds$access_token,
-        new_creds$token_type, new_creds$refresh_token)
-      new_creds$access_token
+      parsed <- content(res)
+      access_new <- parsed$access_token
+      Sys.setenv(ACCESS_CACHE_KEY, access_new)
+      access_new
     }
+  } else {
+    access_cached
   }
 }

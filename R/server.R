@@ -8,8 +8,8 @@ FLAT_HTML_ROOT <- here::here("extdata", "html")
 STATIC_FILE_ROOT <- here::here("extdata", "static")
 
 # APPLICATION SOURCE ----------------------------------------------------------
-
-# TODO: Load whatever needs loading.
+source(here::here("R", "auth.R"))
+source(here::here("R", "discord_helpers.R"))
 
 # SETUP HELPERS ---------------------------------------------------------------
 
@@ -35,13 +35,14 @@ serve_flat_html <- function(path) {
 #' Start the web server itself.
 #'
 #' @param port An integer port on which to listen.
-#' @param db A DBI::DBIConnection.
 #' @return Nothing
-start_server <- function(port, db) {
+start_server <- function(port) {
   newBeakr() %>%
     httpGET("/", serve_flat_html("home.html")) %>%
     httpGET("/terms", serve_flat_html("terms.html")) %>%
     httpGET("/install", function(req, res, err) {
+      access_token <- discord_token()
+      register_slash_command("curve", CLIENT_ID, access_token)
       res$redirect(INSTALL_URL)
     }) %>%
     # TODO: Define interaction webhook endpoint.

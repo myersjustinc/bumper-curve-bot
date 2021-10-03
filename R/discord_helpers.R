@@ -62,7 +62,6 @@ register_slash_command <- function(
     "/commands")
   command_spec_path <- here::here("extdata", str_c(
     "def_", command_name, ".json"))
-  # TODO: Check on how this varies (if at all) for client secrets.
   res <- POST(
     command_meta_url,
     add_headers(Authorization = str_c("Bearer ", client_token)),

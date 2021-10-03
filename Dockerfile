@@ -12,7 +12,6 @@ RUN \
     libxml2-dev \
     linux-headers \
     openssl-dev \
-    postgresql-dev \
     R \
     R-dev \
     R-doc
@@ -58,4 +57,4 @@ RUN \
     'remotes::install_github("tidyverse/readxl@649982ab3769e5b41753b9e543887f95c487425b")' \
         && \
   Rscript -e \
-    'install.packages(c("PKI", "RPostgres", "anthro", "beakr", "here", "pool", "progress", "tidyverse", "units"), repos = "https://mirror.las.iastate.edu/CRAN/")'
+    'install.packages(c("PKI", "anthro", "beakr", "here", "progress", "tidyverse", "units"), repos = "https://mirror.las.iastate.edu/CRAN/")'
