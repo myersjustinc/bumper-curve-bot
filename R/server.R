@@ -1,7 +1,6 @@
 # DEPENDENCIES ----------------------------------------------------------------
 library(tidyverse)
 library(beakr)
-library(pool)
 
 # CONSTANTS -------------------------------------------------------------------
 FLAT_HTML_ROOT <- here::here("extdata", "html")
