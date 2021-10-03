@@ -10,6 +10,7 @@ STATIC_FILE_ROOT <- here::here("extdata", "static")
 # APPLICATION SOURCE ----------------------------------------------------------
 source(here::here("R", "auth.R"))
 source(here::here("R", "discord_helpers.R"))
+source(here::here("R", "http_handlers.R"))
 
 # SETUP HELPERS ---------------------------------------------------------------
 
@@ -45,7 +46,7 @@ start_server <- function(port) {
       register_slash_command("curve", CLIENT_ID, access_token)
       res$redirect(INSTALL_URL)
     }) %>%
-    # TODO: Define interaction webhook endpoint.
+    httpGET("/interaction", http_post_interaction) %>%
     serveStaticFiles("/static", STATIC_FILE_ROOT) %>%
     handleErrors() %>%
     listen(host = "0.0.0.0", port = port)
