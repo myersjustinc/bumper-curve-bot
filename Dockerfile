@@ -46,7 +46,7 @@ RUN \
   cd '/tmp' \
     && \
   rm -rf \
-    "/tmp/udunits-${UDUNITS_VERSION}.tar.gz” \
+    "/tmp/udunits-${UDUNITS_VERSION}.tar.gz" \
     "/tmp/udunits-${UDUNITS_VERSION}"
 
 RUN \
