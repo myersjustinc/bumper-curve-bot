@@ -63,4 +63,4 @@ RUN \
 WORKDIR /app
 COPY . /app
 
-CMD ["./test.R"]
+CMD ["./run.R"]
