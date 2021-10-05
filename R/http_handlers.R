@@ -22,17 +22,28 @@ http_post_interaction_application_command <- function(req, res, err) {
   options <- parsed$data$options
   if (name == "curve") {
     curve_options <- parse_options_curve(options)
-    message <- tryCatch(
-      {
-        percentile <- percentile_weight(
-          curve_options$sex,curve_options$weight,curve_options$age)
-        str_c(
-          "At ", attr(curve_options$age, "explained"), ", a ",
-          if_else(curve_options$sex == "M", "boy", "girl"), " weighing ",
-          attr(curve_options$weight, "explained"), " is at the ",
-          "**", format_percentile(percentile), " percentile**.")
-      },
-      error = function(unused) { "I couldn't determine that percentile." })
+    message <- case_when(
+      is.na(curve_options$sex) ~ str_c(
+        "I couldn't understand your provided `sex` of `",
+        attr(curve_options$sex, "raw"), "`."),
+      is.na(curve_options$weight) ~ str_c(
+        "I couldn't understand your provided `weight` of `",
+        attr(curve_options$weight, "raw"), "`."),
+      is.na(curve_options$age) ~ str_c(
+        "I couldn't understand your provided `age` of `",
+        attr(curve_options$age, "raw"), "`."),
+      TRUE ~ tryCatch(
+        {
+          percentile <- percentile_weight(
+            curve_options$sex, curve_options$weight, curve_options$age)
+          str_c(
+            "At ", attr(curve_options$age, "explained"), ", a ",
+            if_else(curve_options$sex == "M", "boy", "girl"), " weighing ",
+            attr(curve_options$weight, "explained"), " is at the ",
+            "**", format_percentile(percentile), " percentile**.")
+        },
+        error = function(unused) { "I couldn't determine that percentile." })
+    )
   } else {
     message <- "I didn't understand that."
   }

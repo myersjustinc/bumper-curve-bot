@@ -27,6 +27,23 @@ test_that("APPLICATION_COMMAND interactions work as expected", {
       '}',
     '}'))
   expect_equal(res$headers$`Content-Type`, 'application/json')
+
+  req <- load_fixture("req_application_command_curve_error.RDS")
+  res <- load_fixture("res_blank.RDS")
+  err <- load_fixture("err_blank.RDS")
+  http_post_interaction_application_command(req, res, err)
+  expect_equal(res$status, 200)
+  expect_equal(res$body, stringr::str_c(
+    '{',
+      '"type":4,',
+      '"data":{',
+        '"flags":64,',
+        '"content":',
+          '"I couldn\'t understand your provided `age` of ',
+          '`one fortnight`."',
+      '}',
+    '}'))
+  expect_equal(res$headers$`Content-Type`, 'application/json')
 })
 
 test_that("MESSAGE_COMPONENT interactions work as expected", {
