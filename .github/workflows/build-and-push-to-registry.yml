@@ -10,9 +10,9 @@ jobs:
       - name: Log in to container registry
         uses: docker/docker-login@v1
         with:
-          registry: {{ secrets.CONTAINER_REGISTRY_URL }}
-          username: {{ secrets.CONTAINER_REGISTRY_USERNAME }}
-          password: {{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+          registry: "${{ secrets.CONTAINER_REGISTRY_URL }}"
+          username: "${{ secrets.CONTAINER_REGISTRY_USERNAME }}"
+          password: "${{ secrets.CONTAINER_REGISTRY_PASSWORD }}"
       - name: Get repo name
         id: get-repo-name
         run: echo "::set-output name=value::$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')"
