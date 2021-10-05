@@ -45,7 +45,7 @@ start_server <- function(port) {
       register_slash_command("curve", CLIENT_ID, access_token)
       res$redirect(INSTALL_URL)
     }) %>%
-    httpGET("/interaction", http_post_interaction) %>%
+    httpPOST("/interaction", http_post_interaction) %>%
     serveStaticFiles("/static", STATIC_FILE_ROOT) %>%
     handleErrors() %>%
     listen(host = "0.0.0.0", port = port)
