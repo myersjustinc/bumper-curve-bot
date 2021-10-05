@@ -39,9 +39,27 @@ parse_options_curve <- function(options) {
     select(name, value) %>%
     deframe()
   list(
-    "sex" = standardize_sex(options[["sex"]]),
-    "weight" = standardize_weight(options[["weight"]]),
-    "age" = standardize_age(options[["age"]]))
+    "sex" = tryCatch(
+      { standardize_sex(options[["sex"]]) },
+      error = function(unused) {
+        out <- NA
+        attr(out, "raw") <- options[["sex"]]
+        out
+      }),
+    "weight" = tryCatch(
+      { standardize_weight(options[["weight"]]) },
+      error = function(unused) {
+        out <- NA
+        attr(out, "raw") <- options[["weight"]]
+        out
+      }),
+    "age" = tryCatch(
+      { standardize_age(options[["age"]]) },
+      error = function(unused) {
+        out <- NA
+        attr(out, "raw") <- options[["age"]]
+        out
+      }))
 }
 
 #' Register a slash command with Discord.
