@@ -1,6 +1,7 @@
 # DEPENDENCIES ----------------------------------------------------------------
 library(tidyverse)
 library(httr)
+library(lubridate)
 
 # CONSTANTS -------------------------------------------------------------------
 DISCORD_API <- "https://discord.com/api/v8"
@@ -68,16 +69,18 @@ get_auth_token <- function(force = FALSE) {
   if (is.na(access_cached) | force) {
     res <- POST(
       DISCORD_OAUTH2_TOKEN_URL,
+      authenticate(CLIENT_ID, CLIENT_SECRET),
       body = list(
         "grant_type" = "client_credentials",
-        "scope" = "application.commands.update"),
+        "scope" = "applications.commands.update"),
       encode = "form")
     if (http_error(res)) {
-      FALSE
+      warning(content(res, as = "text"))
+      NA_character_
     } else {
       parsed <- content(res)
       access_new <- parsed$access_token
-      Sys.setenv(ACCESS_CACHE_KEY, access_new)
+      Sys.setenv(ACCESS_CACHE_KEY = access_new)
       access_new
     }
   } else {
