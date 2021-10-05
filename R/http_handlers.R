@@ -26,7 +26,6 @@ http_post_interaction_application_command <- function(req, res, err) {
       {
         percentile <- percentile_weight(
           curve_options$sex,curve_options$weight,curve_options$age)
-        # message <- str_c(
         str_c(
           "At ", attr(curve_options$age, "explained"), ", a ",
           if_else(curve_options$sex == "M", "boy", "girl"), " weighing ",
