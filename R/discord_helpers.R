@@ -35,7 +35,9 @@ hex_to_raw <- function(hex_string) {
 #'   name = c("sex", "weight", "age"),
 #'   value = c("F", "11lb13.4oz", "1m")))
 parse_options_curve <- function(options) {
-  options <- deframe(options)
+  options <- as_tibble(options) %>%
+    select(name, value) %>%
+    deframe()
   list(
     "sex" = standardize_sex(options[["sex"]]),
     "weight" = standardize_weight(options[["weight"]]),
