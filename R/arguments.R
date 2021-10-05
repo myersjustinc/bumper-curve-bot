@@ -194,15 +194,19 @@ standardize_age <- function(raw_text) {
   ages_parsed <- ages_raw %>%
     inner_join(AGE_ABBREVIATIONS, by = c("unit_raw" = "abbr")) %>%
     inner_join(AGE_LOOKUPS, by = "unit")
-  total_age <- ages_parsed %>%
-    summarize(total_days = sum(amount * days)) %>%
-    .$total_days
-  attr(total_age, "explained") <- ages_parsed %>%
-    arrange(desc(days)) %>%
-    pmap_chr(function(...) {
-      age <- tibble(...)
-      str_c(age$amount, " ", ifelse(age$amount == 1, age$unit, age$plural))
-    }) %>%
-    str_c(collapse = ", ")
-  total_age
+  if (nrow(ages_parsed) == 0) {
+    stop("Unable to interpret age: ", raw_text)
+  } else {
+    total_age <- ages_parsed %>%
+      summarize(total_days = sum(amount * days)) %>%
+      .$total_days
+    attr(total_age, "explained") <- ages_parsed %>%
+      arrange(desc(days)) %>%
+      pmap_chr(function(...) {
+        age <- tibble(...)
+        str_c(age$amount, " ", ifelse(age$amount == 1, age$unit, age$plural))
+      }) %>%
+      str_c(collapse = ", ")
+    total_age
+  }
 }

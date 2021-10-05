@@ -48,4 +48,8 @@ test_that("ages are parsed properly", {
     23, explained = "3 weeks, 2 days"))
   expect_equal(standardize_age("1y10m3d"), structure(
     672.625, explained = "1 year, 10 months, 3 days"))
+  expect_error(
+    standardize_age("one fortnight"),
+    "Unable to interpret age: one fortnight"
+    )
 })
