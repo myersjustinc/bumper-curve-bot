@@ -17,6 +17,7 @@ source(here::here("R", "output_helpers.R"))
 #' @return A beakr::Response
 http_post_interaction_application_command <- function(req, res, err) {
   parsed <- fromJSON(req$body)
+  message(str_c("Incoming application command:\n", req$body))
   name <- parsed$data$name
   options <- parsed$data$options
   if (name == "curve") {
