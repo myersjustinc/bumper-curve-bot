@@ -45,8 +45,7 @@ discord_token <- function() {
 check_token_validity <- function(access_token, token_type = "Bearer") {
   res <- GET(
     DISCORD_CURRENT_AUTH_URL,
-    add_headers("Authorization" = str_c(
-      creds$token_type, " ", creds$access_token)))
+    add_headers("Authorization" = str_c(token_type, " ", access_token)))
   if (http_error(res)) {
     FALSE
   } else {
