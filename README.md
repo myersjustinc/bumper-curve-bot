@@ -8,6 +8,12 @@ It relies heavily on [`beakr`][] (for creating an R-based web application),
 [`UDUNITS`][] (for flexibility in units of measurement) and [`anthro`][] (for
 making the WHO standards easy to use).
 
+[`anthro`]: https://dirkschumacher.github.io/anthro/
+[`beakr`]: https://mazamascience.github.io/beakr/
+[Discord slash command]: https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ
+[`UDUNITS`]: https://www.unidata.ucar.edu/software/udunits/
+[World Health Organization's growth standards]: https://www.who.int/tools/child-growth-standards/standards
+
 ## Why? ##
 
 Because I'm in a Discord group with a bunch of other parents of young children.
@@ -32,3 +38,5 @@ of which can be provided through environment variables:
 *   `DISCORD_CLIENT_ID`
 *   `DISCORD_CLIENT_SECRET`
 *   `DISCORD_PUBLIC_KEY`
+
+[Discord application]: https://discord.com/developers/applications
