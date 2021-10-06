@@ -4,10 +4,56 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+
+    <title>bumperbot: Growth curves in Discord</title>
+
+    <link rel="icon" type="image/png" href="/static/favicon.png">
   </head>
   <body>
-    <h1>Home</h1>
-    <p>hello, world</p>
+    <header>
+      <h1>bumperbot</h1>
+      <p class="subhead">Growth curves in Discord</p>
+    </header>
+
+    <main>
+      <p>
+        <a class="cta" href="/install">Click here to install!</a>
+      </p>
+      <p>
+        <strong>bumperbot</strong> allows users to refer to
+        <a href="https://www.who.int/toolkits/child-growth-standards"><abbr title="World Health Organization">WHO</abbr> growth standards</a>
+        without leaving Discord.
+      </p>
+      <p>
+        The bot provides a
+        <a href="https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ">slash command</a>,
+        <code>/curve</code>, that checks the given weight, age and sex against
+        the WHO curves we all probably watch a bit too closely already.
+      </p>
+      <p>
+        Take a look:
+      </p>
+      <p>
+        <img class="demo" src="/static/demo.gif" alt="
+          A sequence of screenshots of Discord on mobile. The user is shown
+          typing `/curve` and being prompted for a child's sex, weight and age.
+          After filling those out, the bot replies: 'At 2 months, a girl
+          weighing 15 lb 1 oz is at the 98.7th percentile.'
+        ">
+      </p>
+    </main>
+
+    <footer>
+      <p>
+        Made in Chicago with 100% recycled bits by
+        <a href="https://www.justinmyers.net/">Justin Myers</a>
+      </p>
+      <p>
+        Find the code
+        <a href="https://github.com/myersjustinc/bumper-curve-bot">on GitHub</a>!
+      </p>
+    </footer>
+
+    <link rel="stylesheet" href="/static/style.css">
   </body>
 </html>
