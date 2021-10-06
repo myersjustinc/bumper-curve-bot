@@ -6,7 +6,7 @@
     {
       "name": "sex",
       "type": 3,
-      "description": "child's sex",
+      "description": "child's sex (binary)",
       "required": true,
       "choices": [
         {
@@ -22,13 +22,13 @@
     {
       "name": "weight",
       "type": 3,
-      "description": "child's weight",
+      "description": "child's weight (e.g., \"15 pounds, 1 ounce\", \"3 kg\")",
       "required": true
     },
     {
       "name": "age",
       "type": 3,
-      "description": "child's age",
+      "description": "child's age (e.g., \"seven weeks\", \"1y2m3d\", \"3 mo\")",
       "required": true
     }
   ]
