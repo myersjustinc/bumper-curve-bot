@@ -23,27 +23,20 @@ http_post_interaction_application_command <- function(req, res, err) {
   if (name == "curve") {
     curve_options <- parse_options_curve(options)
     message <- case_when(
-      is.na(curve_options$sex) ~ str_c(
-        "I couldn't understand your provided `sex` of `",
-        attr(curve_options$sex, "raw"), "`."),
-      is.na(curve_options$weight) ~ str_c(
-        "I couldn't understand your provided `weight` of `",
-        attr(curve_options$weight, "raw"), "`."),
-      is.na(curve_options$age) ~ str_c(
-        "I couldn't understand your provided `age` of `",
-        attr(curve_options$age, "raw"), "`."),
-      TRUE ~ tryCatch(
-        {
-          percentile <- percentile_weight(
-            curve_options$sex, curve_options$weight, curve_options$age)
-          str_c(
-            "At ", attr(curve_options$age, "explained"), ", a ",
-            if_else(curve_options$sex == "M", "boy", "girl"), " weighing ",
-            attr(curve_options$weight, "explained"), " is at the ",
-            "**", format_percentile(percentile), " percentile**.")
-        },
-        error = function(unused) { "I couldn't determine that percentile." })
-    )
+      !curve_options$is_valid ~ curve_options$error,
+      curve_options$type == "weight" ~ format_curve_weight(
+        percentile_weight(
+          curve_options$sex, curve_options$weight, curve_options$age),
+        curve_options),
+      curve_options$type == "length" ~ format_curve_length(
+        percentile_length(
+          curve_options$sex, curve_options$length, curve_options$age),
+        curve_options),
+      curve_options$type == "head" ~ format_curve_head(
+        percentile_head(
+          curve_options$sex, curve_options$circumference, curve_options$age),
+        curve_options),
+      TRUE ~ curve_options$error)
   } else {
     message <- "I didn't understand that."
   }
