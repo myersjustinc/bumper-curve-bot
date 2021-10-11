@@ -53,3 +53,18 @@ test_that("ages are parsed properly", {
     "Unable to interpret age: one fortnight"
     )
 })
+
+test_that("lengths are parsed properly", {
+  expect_equal(round(standardize_length("25.5 inches"), 1), structure(
+    64.8, explained = "25.5 in"))
+  expect_equal(round(standardize_length("1'1.5\""), 1), structure(
+    34.3, explained = "1 ft 1.5 in"))
+  expect_equal(round(standardize_length("64.8cm"), 1), structure(
+    64.8, explained = "64.8 cm"))
+  expect_equal(round(standardize_length("0.7 metre"), 1), structure(
+    70, explained = "0.7 m"))
+  expect_equal(round(standardize_length("0m70cm"), 1), structure(
+    70, explained = "0 m 70 cm"))
+  expect_equal(round(standardize_length("one yard, five inch"), 1), structure(
+    104.1, explained = "1 yd 5 in"))
+})

@@ -210,3 +210,90 @@ standardize_age <- function(raw_text) {
     total_age
   }
 }
+
+# LENGTH STANDARDIZATION ------------------------------------------------------
+
+LENGTH_LOOKUPS <- tribble(
+    ~unit,          ~canonical,   ~udunits_key,
+    "centimeter",   "cm",         "centimeter",
+    "inch",         "in",         "international_inch",
+    "foot",         "ft",         "US_survey_foot",
+    "yard",         "yd",         "US_survey_yard",
+    "meter",        "m",          "meter") %>%
+  pmap_dfr(function(...) {
+    lookup <- tibble(...)
+    cm_equiv <- 1.0 %>%
+      as_units(lookup$udunits_key) %>%
+      set_units("centimeter") %>%
+      drop_units()
+    lookup %>%
+      mutate(cm_equiv = cm_equiv)
+  })
+LENGTH_ABBREVIATIONS <- tribble(
+  ~unit,          ~abbr,
+  "centimeter",   "centimeter",
+  "centimeter",   "cm",
+  "centimeter",   "centimetre",
+  "inch",         "inch",
+  "inch",         "in",
+  "inch",         "inche",
+  "inch",         "\"",
+  "foot",         "foot",
+  "foot",         "ft",
+  "foot",         "'",
+  "yard",         "yard",
+  "yard",         "yd",
+  "meter",        "meter",
+  "meter",        "m",
+  "meter",        "metre")
+
+#' Convert a user-provided length to kilograms, totaling several lengths if
+#' needed.
+#'
+#' @param raw_text The exact string provided by the user when prompted for a
+#'   child's length
+#' @return A number of centimeters equivalent to the given length, with an
+#'   `explained` character attribute with a standardized human-readable
+#'   interpretation of the input
+#' @examples
+#' standardize_length("25 inches")
+#' standardize_length("2'0\"")
+#' standardize_length("60cm")
+standardize_length <- function(raw_text) {
+  with_digits <- raw_text %>%
+    str_to_lower() %>%
+    str_replace_all(NUMBERS_REPLACEMENTS)
+  length_pattern <- regex("([0-9.]+)\\s*([a-z'\"]+)", ignore_case = TRUE)
+  lengths_raw <- with_digits %>%
+    str_match_all(length_pattern) %>%
+    .[[1]]
+  colnames(lengths_raw) <- c("full", "amount", "unit")
+  lengths_raw <- lengths_raw %>%
+    as_tibble() %>%
+    transmute(
+      amount = as.numeric(amount),
+      unit_raw = str_remove(unit, "[sS]$"))
+  lengths_parsed <- lengths_raw %>%
+    inner_join(LENGTH_ABBREVIATIONS, by = c("unit_raw" = "abbr")) %>%
+    inner_join(LENGTH_LOOKUPS, by = "unit")
+  total_length <- lengths_parsed %>%
+    pmap_dfr(function(...) {
+      parsed_row <- tibble(...)
+      row_cm <- parsed_row$amount %>%
+        as_units(parsed_row$udunits_key) %>%
+        set_units("centimeter") %>%
+        drop_units()
+      parsed_row %>%
+        mutate(row_cm = row_cm)
+    }) %>%
+    summarize(total_cm = sum(row_cm)) %>%
+    .$total_cm
+  attr(total_length, "explained") <- lengths_parsed %>%
+    arrange(desc(cm_equiv)) %>%
+    pmap_chr(function(...) {
+      length <- tibble(...)
+      str_c(length$amount, " ", length$canonical)
+    }) %>%
+    str_c(collapse = " ")
+  total_length
+}
