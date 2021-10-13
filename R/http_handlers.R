@@ -21,22 +21,43 @@ http_post_interaction_application_command <- function(req, res, err) {
   name <- parsed$data$name
   options <- parsed$data$options
   if (name == "curve") {
-    curve_options <- parse_options_curve(options)
-    message <- case_when(
-      !curve_options$is_valid ~ curve_options$error,
-      curve_options$type == "weight" ~ format_curve_weight(
-        percentile_weight(
-          curve_options$sex, curve_options$weight, curve_options$age),
-        curve_options),
-      curve_options$type == "length" ~ format_curve_length(
-        percentile_length(
-          curve_options$sex, curve_options$length, curve_options$age),
-        curve_options),
-      curve_options$type == "head" ~ format_curve_head(
-        percentile_head(
-          curve_options$sex, curve_options$circumference, curve_options$age),
-        curve_options),
-      TRUE ~ curve_options$error)
+    if (options$name == "help") {
+      message <- str_c(
+        'Use this command to look up where your child lands on the WHO ',
+        'growth curves at a particular age. You can use `/curve weight`, ',
+        '`/curve length` or `/curve head`.',
+        '\n\n',
+        'You\'ll be asked for three details about your child:\n',
+        '\u2022 Their sex (male or female, since those are the only ',
+                'versions of the curves available)',
+        '\u2022 The measurement you\'re interested in (weight, ',
+                'length/height, head circumference)',
+        '\u2022 Their age',
+        '\n\n',
+        'We\'re pretty forgiving about how you write the ages and other ',
+        'measurements, but if you think the bot is misunderstanding ',
+        'something, ask @myersjustinc#0042.'
+        )
+    } else {
+      curve_options <- parse_options_curve(options)
+      message <- case_when(
+        !curve_options$is_valid ~ curve_options$error,
+        TRUE ~ switch(
+          curve_options$type,
+          weight = format_curve(
+            percentile_weight(
+              curve_options$sex, curve_options$weight, curve_options$age),
+            curve_options),
+          length = format_curve(
+            percentile_length(
+              curve_options$sex, curve_options$length, curve_options$age),
+            curve_options),
+          head = format_curve(
+            percentile_head(
+              curve_options$sex, curve_options$circumference, curve_options$age),
+            curve_options)
+          ))
+    }
   } else {
     message <- "I didn't understand that."
   }
