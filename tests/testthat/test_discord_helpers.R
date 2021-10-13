@@ -11,25 +11,39 @@ test_that("hex strings get parsed properly", {
 
 test_that("/curve options get parsed properly", {
   raw_options <- list(
-    name = c("sex", "weight", "age"),
-    value = c("F", "11lb13.4oz", "1m"))
+    name = "weight",
+    type = 1,
+    options = list(list(
+      name = c("sex", "weight", "age"),
+      type = 3,
+      value = c("F", "11lb13.4oz", "1m"))))
   expect_equal(
     parse_options_curve(raw_options),
     list(
+      type = "weight",
+      is_valid = TRUE,
+      error = NA_character_,
       sex = "F",
-      weight = structure(5.3694, explained = "11 lb 13.4 oz"),
-      age = structure(30.4375, explained = "1 month")),
+      age = structure(30.4375, explained = "1 month"),
+      weight = structure(5.3694, explained = "11 lb 13.4 oz")),
     tolerance = 0.0001)
 
   bad_options <- list(
-    name = c("sex", "weight", "age"),
-    value = c("F", "1 stone", "1m"))
+    name = "weight",
+    type = 1,
+    options = list(list(
+      name = c("sex", "weight", "age"),
+      type = 3,
+      value = c("F", "1 stone", "1m"))))
   expect_equal(
     parse_options_curve(bad_options),
     list(
+      type = "weight",
+      is_valid = FALSE,
+      error = "I couldn't understand your provided `weight` of `1 stone`.",
       sex = "F",
-      weight = structure(NA, raw = "1 stone"),
-      age = structure(30.4375, explained = "1 month")),
+      age = structure(30.4375, explained = "1 month"),
+      weight = structure(NA_real_, raw = "1 stone")),
     tolerance = 0.0001)
 })
 

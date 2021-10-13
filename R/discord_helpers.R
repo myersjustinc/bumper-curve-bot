@@ -23,43 +23,115 @@ hex_to_raw <- function(hex_string) {
     as.raw()
 }
 
+#' Generate a human-readable error message to explain an unparseable argument.
+#'
+#' @param name A string argument name that should match what the user sees in
+#'   Discord.
+#' @param value A string identical to the user's provided value for that
+#'   argument.
+#' @return A string error message
+#' @examples
+#' build_error("age", "one fortnight")
+build_error <- function(name, value) {
+  str_c(
+    "I couldn't understand your provided `", name, "` of ",
+    "`", attr(value, "raw"), "`."
+  )
+}
+
 # DISCORD API INTERACTIONS ----------------------------------------------------
 
 #' Parse options for the `/curve` command.
 #'
-#' @param options A two-dimensional list such as the one returned in fromJSON.
-#' @return A list with three properties: string $sex, numeric $weight (kg),
-#'   numeric $age (days)
+#' @param options A two-dimensional list such as the one returned in fromJSON,
+#'   with the $options property being a list whose one element is a
+#'   two-dimensional list of options.
+#' @return A list with six properties: string $type, logical $is_valid,
+#'   string $error, string $sex, numeric $age, and one of the following numeric
+#'   properties: $weight, $length, $circumference
 #' @examples
 #' parse_options_curve(list(
-#'   name = c("sex", "weight", "age"),
-#'   value = c("F", "11lb13.4oz", "1m")))
+#'   name = "weight",
+#'   type = 1,
+#'   options = list(list(
+#'     name = c("sex", "weight", "age"),
+#'     type = 3,
+#'     value = c("F", "11lb13.4oz", "1m")))))
 parse_options_curve <- function(options) {
-  options <- as_tibble(options) %>%
+  command_name <- options$name
+  options <- as_tibble(options$options[[1]]) %>%
     select(name, value) %>%
     deframe()
-  list(
-    "sex" = tryCatch(
-      { standardize_sex(options[["sex"]]) },
-      error = function(unused) {
-        out <- NA
-        attr(out, "raw") <- options[["sex"]]
-        out
-      }),
-    "weight" = tryCatch(
+
+  sex_parsed <- tryCatch(
+    { standardize_sex(options[["sex"]]) },
+    error = function(unused) {
+      out <- NA_real_
+      attr(out, "raw") <- options[["sex"]]
+      out
+    })
+  age_parsed <- tryCatch(
+    { standardize_age(options[["age"]]) },
+    error = function(unused) {
+      out <- NA_real_
+      attr(out, "raw") <- options[["age"]]
+      out
+    })
+  output <- list(
+    "type" = command_name,
+    "is_valid" = case_when(
+      is.na(sex_parsed) ~ FALSE,
+      is.na(age_parsed) ~ FALSE,
+      TRUE ~ TRUE),
+    "error" = case_when(
+      is.na(sex_parsed) ~ build_error("sex", sex_parsed),
+      is.na(age_parsed) ~ build_error("age", age_parsed),
+      TRUE ~ NA_character_),
+    "sex" = sex_parsed,
+    "age" = age_parsed)
+
+  if (command_name == "weight") {
+    weight_parsed <- tryCatch(
       { standardize_weight(options[["weight"]]) },
       error = function(unused) {
-        out <- NA
+        out <- NA_real_
         attr(out, "raw") <- options[["weight"]]
         out
-      }),
-    "age" = tryCatch(
-      { standardize_age(options[["age"]]) },
+      })
+    output[["weight"]] <- weight_parsed
+    if (is.na(weight_parsed)) {
+      output[["is_valid"]] <- FALSE
+      output[["error"]] <- build_error("weight", weight_parsed)
+    }
+  } else if (command_name == "length") {
+    length_parsed <- tryCatch(
+      { standardize_length(options[["length"]]) },
       error = function(unused) {
-        out <- NA
-        attr(out, "raw") <- options[["age"]]
+        out <- NA_real_
+        attr(out, "raw") <- options[["length"]]
         out
-      }))
+      })
+    output[["length"]] <- length_parsed
+    if (is.na(length_parsed)) {
+      output[["is_valid"]] <- FALSE
+      output[["error"]] <- build_error("length", length_parsed)
+    }
+  } else if (command_name == "head") {
+    circumference_parsed <- tryCatch(
+      { standardize_length(options[["circumference"]]) },
+      error = function(unused) {
+        out <- NA_real_
+        attr(out, "raw") <- options[["circumference"]]
+        out
+      })
+    output[["circumference"]] <- circumference_parsed
+    if (is.na(circumference_parsed)) {
+      output[["is_valid"]] <- FALSE
+      output[["error"]] <- build_error("circumference", circumference_parsed)
+    }
+  }
+
+  output
 }
 
 #' Register a slash command with Discord.

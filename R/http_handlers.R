@@ -21,29 +21,43 @@ http_post_interaction_application_command <- function(req, res, err) {
   name <- parsed$data$name
   options <- parsed$data$options
   if (name == "curve") {
-    curve_options <- parse_options_curve(options)
-    message <- case_when(
-      is.na(curve_options$sex) ~ str_c(
-        "I couldn't understand your provided `sex` of `",
-        attr(curve_options$sex, "raw"), "`."),
-      is.na(curve_options$weight) ~ str_c(
-        "I couldn't understand your provided `weight` of `",
-        attr(curve_options$weight, "raw"), "`."),
-      is.na(curve_options$age) ~ str_c(
-        "I couldn't understand your provided `age` of `",
-        attr(curve_options$age, "raw"), "`."),
-      TRUE ~ tryCatch(
-        {
-          percentile <- percentile_weight(
-            curve_options$sex, curve_options$weight, curve_options$age)
-          str_c(
-            "At ", attr(curve_options$age, "explained"), ", a ",
-            if_else(curve_options$sex == "M", "boy", "girl"), " weighing ",
-            attr(curve_options$weight, "explained"), " is at the ",
-            "**", format_percentile(percentile), " percentile**.")
-        },
-        error = function(unused) { "I couldn't determine that percentile." })
-    )
+    if (options$name == "help") {
+      message <- str_c(
+        'Use this command to look up where your child lands on the WHO ',
+        'growth curves at a particular age. You can use `/curve weight`, ',
+        '`/curve length` or `/curve head`.',
+        '\n\n',
+        'You\'ll be asked for three details about your child:\n',
+        '\u2022 Their sex (male or female, since those are the only ',
+                'versions of the curves available)',
+        '\u2022 The measurement you\'re interested in (weight, ',
+                'length/height, head circumference)',
+        '\u2022 Their age',
+        '\n\n',
+        'We\'re pretty forgiving about how you write the ages and other ',
+        'measurements, but if you think the bot is misunderstanding ',
+        'something, ask @myersjustinc#0042.'
+        )
+    } else {
+      curve_options <- parse_options_curve(options)
+      message <- case_when(
+        !curve_options$is_valid ~ curve_options$error,
+        TRUE ~ switch(
+          curve_options$type,
+          weight = format_curve(
+            percentile_weight(
+              curve_options$sex, curve_options$weight, curve_options$age),
+            curve_options),
+          length = format_curve(
+            percentile_length(
+              curve_options$sex, curve_options$length, curve_options$age),
+            curve_options),
+          head = format_curve(
+            percentile_head(
+              curve_options$sex, curve_options$circumference, curve_options$age),
+            curve_options)
+          ))
+    }
   } else {
     message <- "I didn't understand that."
   }
