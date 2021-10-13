@@ -43,7 +43,7 @@ test_that("/curve options get parsed properly", {
       error = "I couldn't understand your provided `weight` of `1 stone`.",
       sex = "F",
       age = structure(30.4375, explained = "1 month"),
-      weight = structure(NA, raw = "1 stone")),
+      weight = structure(NA_real_, raw = "1 stone")),
     tolerance = 0.0001)
 })
 

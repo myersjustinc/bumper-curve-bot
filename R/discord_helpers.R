@@ -66,14 +66,14 @@ parse_options_curve <- function(options) {
   sex_parsed <- tryCatch(
     { standardize_sex(options[["sex"]]) },
     error = function(unused) {
-      out <- NA
+      out <- NA_real_
       attr(out, "raw") <- options[["sex"]]
       out
     })
   age_parsed <- tryCatch(
     { standardize_age(options[["age"]]) },
     error = function(unused) {
-      out <- NA
+      out <- NA_real_
       attr(out, "raw") <- options[["age"]]
       out
     })
@@ -94,7 +94,7 @@ parse_options_curve <- function(options) {
     weight_parsed <- tryCatch(
       { standardize_weight(options[["weight"]]) },
       error = function(unused) {
-        out <- NA
+        out <- NA_real_
         attr(out, "raw") <- options[["weight"]]
         out
       })
@@ -107,7 +107,7 @@ parse_options_curve <- function(options) {
     length_parsed <- tryCatch(
       { standardize_length(options[["length"]]) },
       error = function(unused) {
-        out <- NA
+        out <- NA_real_
         attr(out, "raw") <- options[["length"]]
         out
       })
@@ -120,7 +120,7 @@ parse_options_curve <- function(options) {
     circumference_parsed <- tryCatch(
       { standardize_length(options[["circumference"]]) },
       error = function(unused) {
-        out <- NA
+        out <- NA_real_
         attr(out, "raw") <- options[["circumference"]]
         out
       })
