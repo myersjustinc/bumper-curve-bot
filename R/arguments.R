@@ -238,9 +238,18 @@ LENGTH_ABBREVIATIONS <- tribble(
   "inch",         "in",
   "inch",         "inche",
   "inch",         "\"",
+  "inch",         "\u201c",       # U+201C LEFT DOUBLE QUOTATION MARK
+  "inch",         "\u201d",       # U+201D RIGHT DOUBLE QUOTATION MARK
+  "inch",         "\u201e",       # U+201E DOUBLE LOW-9 QUOTATION MARK
+  "inch",         "\u201f",       # U+201F DOUBLE HIGH-REVERSED-9 QUOTATION MARK
+  "inch",         "\u2e42",       # U+2E42 DOUBLE LOW-REVERSED-9 QUOTATION MARK
   "foot",         "foot",
   "foot",         "ft",
   "foot",         "'",
+  "foot",         "\u2018",       # U+2018 LEFT SINGLE QUOTATION MARK
+  "foot",         "\u2019",       # U+2019 RIGHT SINGLE QUOTATION MARK
+  "foot",         "\u201a",       # U+201A SINGLE LOW-9 QUOTATION MARK
+  "foot",         "\u201b",       # U+201B SINGLE HIGH-REVERSED-9 QUOTATION MARK
   "yard",         "yard",
   "yard",         "yd",
   "meter",        "meter",
@@ -263,7 +272,9 @@ standardize_length <- function(raw_text) {
   with_digits <- raw_text %>%
     str_to_lower() %>%
     str_replace_all(NUMBERS_REPLACEMENTS)
-  length_pattern <- regex("([0-9.]+)\\s*([a-z'\"]+)", ignore_case = TRUE)
+  length_pattern <- regex(
+    "([0-9.]+)\\s*([a-z\\p{Quotation_Mark}]+)",
+    ignore_case = TRUE)
   lengths_raw <- with_digits %>%
     str_match_all(length_pattern) %>%
     .[[1]]

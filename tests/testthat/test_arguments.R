@@ -59,6 +59,8 @@ test_that("lengths are parsed properly", {
     64.8, explained = "25.5 in"))
   expect_equal(round(standardize_length("1'1.5\""), 1), structure(
     34.3, explained = "1 ft 1.5 in"))
+  expect_equal(round(standardize_length("1\u20191.5\u201d"), 1), structure(
+    34.3, explained = "1 ft 1.5 in"))
   expect_equal(round(standardize_length("64.8cm"), 1), structure(
     64.8, explained = "64.8 cm"))
   expect_equal(round(standardize_length("0.7 metre"), 1), structure(
