@@ -5,6 +5,8 @@ library(beakr)
 # CONSTANTS -------------------------------------------------------------------
 FLAT_HTML_ROOT <- here::here("extdata", "html")
 STATIC_FILE_ROOT <- here::here("extdata", "static")
+LOCALHOST_PATTERN <- regex(
+  "(?<=^|\\.)(?:localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0)(?:$|:)")
 
 # APPLICATION SOURCE ----------------------------------------------------------
 source(here::here("R", "auth.R"))
@@ -23,13 +25,31 @@ serve_flat_html <- function(path) {
     abs_path,
     fixed(FLAT_HTML_ROOT, ignore_case = FALSE))
   function(req, res, err) {
-    message(jsonlite::toJSON(req$headers, auto_unbox = TRUE))
     res$setStatus(if_else(path_is_safe, 200, 404))
     res$setContentType("text/html")
     res$setBody(read_file(if_else(
       path_is_safe, abs_path, file.path(FLAT_HTML_ROOT, "404.html"))))
   }
 }
+
+#' Force users to view over HTTPS whenever feasible.
+#'
+#' @param beakr A beakr::Beakr
+#' @return The same beakr::Beakr with an additional middleware in place
+redirect_to_https <- function(beakr) {
+  beakr %>%
+    httpGET(path = NULL, function(req, res, err) {
+      if (length(req$headers$x_forwarded_proto)) {
+        if (
+            req$headers$x_forwarded_proto == "http" &
+            !str_detect(req$headers$host, LOCALHOST_PATTERN)
+        ) {
+          res$redirect(str_c("https://", req$headers$host, req$path))
+        }
+      }
+    })
+}
+
 
 # ROUTES ----------------------------------------------------------------------
 
@@ -39,6 +59,7 @@ serve_flat_html <- function(path) {
 #' @return Nothing
 start_server <- function(port) {
   newBeakr() %>%
+    redirect_to_https() %>%
     httpGET("/", serve_flat_html("home.html")) %>%
     httpGET("/terms", serve_flat_html("terms.html")) %>%
     httpGET("/install", function(req, res, err) {
