@@ -23,6 +23,7 @@ serve_flat_html <- function(path) {
     abs_path,
     fixed(FLAT_HTML_ROOT, ignore_case = FALSE))
   function(req, res, err) {
+    message(jsonlite::toJSON(req$headers, auto_unbox = TRUE))
     res$setStatus(if_else(path_is_safe, 200, 404))
     res$setContentType("text/html")
     res$setBody(read_file(if_else(
